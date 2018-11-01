@@ -3,20 +3,23 @@ from network import Network
 from matplotlib import pyplot as plt
 import numpy as np
 from math import ceil
+from argparse import ArgumentParser
 
 column_count = 4
 
-def main(test_count=15):
+def main(epoch, hidden_layers, test_count):
   training_data, validation_data, test_data = loader.load_data_decorator()
   print("Data loaded.")
 
   training_data = list(training_data)
 
-  layers = [784, 16, 10]
+  layers = [784] + hidden_layers + [10]
   network = Network(layers)
   print("Initialised network with layer structure {}".format(layers))
 
-  network.SGD(training_data, 2, 10, 2.0, test_data)
+  mini_batch_size = 10
+  learning_rate = 2.0
+  network.SGD(training_data, epoch, mini_batch_size, learning_rate, test_data)
   print("Training complete")
 
   count = 1
@@ -24,11 +27,11 @@ def main(test_count=15):
   plt.tight_layout()
   for idx, (validation_input, validation_result) in enumerate(validation_data):
     output = network.feedforward(validation_input)
-    print(output)
 
     idx = np.argmax(output)
     [output] = output[idx]
 
+    # Reformat image to 28x28 for plotting
     image = np.reshape(validation_input, (28, 28))
 
     plt.subplot(rows, column_count, count)
@@ -45,4 +48,10 @@ def main(test_count=15):
 
 
 if __name__ == "__main__":
-  main()
+  parser = ArgumentParser()
+  parser.add_argument('-e', '--epoch', type=int, default=30)
+  parser.add_argument('-l', '--layers', nargs='+', type=int, default=16)
+  parser.add_argument('-t', '--tests', type=int, default=15)
+
+  args = parser.parse_args()
+  main(args.epoch, args.layers, args.tests)
