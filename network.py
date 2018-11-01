@@ -1,4 +1,5 @@
 import numpy as np
+import random
 
 class Network:
 
@@ -29,8 +30,54 @@ class Network:
     return a
 
   
-  
+  def SGD(self, training_data, epochs, mini_batch_size, eta, test_data=None):
+    """
 
+    """
+    
+    training_data = list(training_data)
+    n = len(training_data)
+  
+    if test_data:
+      test_data = list(test_data)
+      n_test = len(test_data)
+
+    for idx in range(epochs):
+      # Shuffle and slice training data by the mini_batch_size
+      random.shuffle(training_data)
+      mini_batches = [training_data[j:j+mini_batch_size] for j in range(0, n, mini_batch_size)]
+
+      # Apply SGD using backpropagation on each minibatch
+      for mini_batch in mini_batches:
+        self.update_mini_batch(mini_batch, eta)
+      
+      # Print evaluation result if applicable
+      if test_data:
+        print("Epoch {}: {} / {}".format(idx, self.evaluate(test_data), n_test))
+      else:
+        print("Epoch {} complete".format(idx))
+    
+
+    def update_mini_batch(self, mini_batch, eta):
+      """
+
+      """
+      pass
+    
+
+    def backprop(self, x, y):
+      """
+
+      """
+      pass
+    
+    def evaluate(self, test_data):
+      """
+
+      """
+      pass
+
+      
 
 
 ### Utility functions
