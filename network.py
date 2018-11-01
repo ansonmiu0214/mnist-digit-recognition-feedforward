@@ -32,7 +32,7 @@ class Network:
   
   def SGD(self, training_data, epochs, mini_batch_size, eta, test_data=None):
     """
-
+    Train the neural network using mini-batched SGD to update the network weights and biases.
     """
     
     training_data = list(training_data)
@@ -60,22 +60,81 @@ class Network:
 
     def update_mini_batch(self, mini_batch, eta):
       """
-
+      Updates the weights and biases through a single iteration of gradient descent
+      using the training data in @param mini_batch and learning rate @param eta.
       """
-      pass
-    
 
+      # Initialise gradient vectors
+      nabla_b = [np.zeroes(bias.shape) for bias in self.biases]
+      nabla_w = [np.zeroes(weight.shape) for weight in self.weights]
+
+      for x, y in mini_batch:
+        # Compute gradients of cost funtion using backpropagation
+        delta_nabla_b, delta_nabla_w = self.backprop(x, y)
+
+        # Update gradient accordingly
+        nabla_b = [nb + dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
+        nabla_w = [nw + dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
+
+      # Apply the gradient changes to the network weights and biases
+      m = len(mini_batch)
+      self.weights = [w - (eta / m) * nw for w, nw in zip(self.weights, nabla_w)]
+      self.biases = [b - (eta / m) * nb for b, nb in zip(self.biases, nabla_b)]
+
+    
     def backprop(self, x, y):
       """
-
+      Returns a tuple (nabla_b, nabla_w) representing the gradient for the cost function.
       """
-      pass
+
+      # Initialise gradient vectors
+      nabla_b = [np.zeroes(b.shape) for b in self.biases]
+      nabla_w = [np.zeroes(w.shape) for w in self.weights]
+
+      # Feedforward
+      # The initial activation is the network input
+      activation = x
+      activations = [x]
+      zs = []
+      for bias, weight in zip(self.biases, self.weights):
+        z = np.dot(weight, activation) + bias
+        zs.append(output)
+
+        # Compute activation for next layer using sigmoid
+        activation = sigmoid(z)
+        activations.append(activation)
+
+      # Backward pass
+      # Compute error (delta) vector and backpropagate the erpr
+      delta = self.cost_derivative(activations[-1], y) * sigmoid_prime(zs[-1])
+      nabla_b[-1] = delta
+      nabla_w[-1] = np.dot(delta, activations[-2].transpose())
+
+      for l in range(2, self.num_layers):
+        # Using the `negative indices` in Python
+        # zs[-2] := 2nd-last output
+        z = zs[-l]
+        sp = sigmoid_prime(z)
+        delta = np.dot(self.weights[-l+1].transpose(), delta) * sp
+
+        # Update gradients
+        nabla_b[-l] = delta
+        nabla_w[-l] = np.dot(delta, activations[-l-1].transpose())
+
+      return nabla_b, nabla_w
+      
     
     def evaluate(self, test_data):
       """
 
       """
       pass
+    
+    def cost_derivative(self, output_activations, y):
+      """
+      Return the vector of partial derivatives dC_x / d_a for the output activations.
+      """
+      return output_activations - y
 
       
 
