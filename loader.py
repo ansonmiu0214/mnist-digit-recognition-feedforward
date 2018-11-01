@@ -39,6 +39,6 @@ def vectorise_result(i):
   """
   Return a 10-dimensional unit vector with 1.0 in the ith position.
   """
-  output = np.zeroes((10, 1))
+  output = np.zeros((10, 1))
   output[i] = 1.0
   return output
