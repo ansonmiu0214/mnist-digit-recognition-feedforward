@@ -122,20 +122,22 @@ class Network:
         nabla_w[-l] = np.dot(delta, activations[-l-1].transpose())
 
       return nabla_b, nabla_w
-      
+
     
     def evaluate(self, test_data):
       """
-
+      Return the number of test inputs for which tne neural network outputs the correct result.
+      Neural network output inferred from the index (0-9) where the final layer has the highest activation.
       """
-      pass
+      test_results = [(np.argmax(self.feedforward(x)), y) for x, y in test_data]
+      return sum([int(x == y) for x, y in test_results])
+
     
     def cost_derivative(self, output_activations, y):
       """
       Return the vector of partial derivatives dC_x / d_a for the output activations.
       """
       return output_activations - y
-
       
 
 
